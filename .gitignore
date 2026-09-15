@@ -1,0 +1,25 @@
+# Fichiers de compilation Java
+*.class
+bin/
+build/
+out/
+target/
+
+# Environnements IDE & Éditeurs
+.vscode/
+.idea/
+*.iml
+*.iws
+*.ipr
+.settings/
+.project
+.classpath
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Fichiers journaux et archives temporaires
+*.log
+*.zip
+*.tar.gz
