@@ -1,9 +1,10 @@
 package vrms.model;
+import vrms.contract.Identifiable;
 import vrms.exception.RentalException;
 import java.time.LocalDateTime;
 import java.time.Duration;
 
-public class Rental {
+public class Rental implements Identifiable {
     private final String rentalId;
     private final String vehicleId;
     private final String customerId;
@@ -15,8 +16,8 @@ public class Rental {
 
     public Rental(String rentalId, String vehicleId, String customerId, LocalDateTime start, LocalDateTime end, double totalPrice,boolean active)throws RentalException{
         
-        if (vehicleId == null || vehicleId.isBlank()) {
-            throw new RentalException("Vehicle ID is required");
+        if (rentalId == null || rentalId.isBlank()) {
+            throw new RentalException("Rental ID is required");
         }
         this.rentalId = rentalId;
         if (rentalId == null || rentalId.isBlank()) {
@@ -83,5 +84,10 @@ public class Rental {
     @Override 
     public String toString(){
         return "Rental :" + rentalId + ", vehicle:" + vehicleId + ", customer :" + customerId + ", start :" + start + ", end: " + end + "total price :" + totalPrice + ", active :" + active;
+    }
+
+    @Override 
+    public String getId() {
+    return rentalId;
     }
 }
