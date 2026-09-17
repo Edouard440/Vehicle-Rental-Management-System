@@ -1,0 +1,5 @@
+C01,Jean Tremblay,jean.tremblay@email.ca
+C02,Sophie Martin,sophie.martin@email.fr
+C03,Alexandre Roy,alex.roy@email.ca
+C04,Camille Gagnon,camille.gagnon@email.ca
+C05,Lucas Lefebvre,lucas.lefebvre@email.fr

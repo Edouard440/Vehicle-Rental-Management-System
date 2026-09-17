@@ -4,7 +4,7 @@ public class Car extends Vehicle{
 
     private int numberOfSeats;
 
-    public Car(int numberOfSeats,String id, String model, double mileage,double baseRate, VehicleStatus status){
+    public Car(String id, String model, double mileage,double baseRate, VehicleStatus status, int numberOfSeats){
         super(id, model, mileage, baseRate, status);
         this.numberOfSeats=numberOfSeats;
     }
