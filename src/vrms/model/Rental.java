@@ -20,8 +20,8 @@ public class Rental implements Identifiable {
             throw new RentalException("Rental ID is required");
         }
         this.rentalId = rentalId;
-        if (rentalId == null || rentalId.isBlank()) {
-            throw new RentalException("Rental ID is required");
+        if (vehicleId == null || vehicleId.isBlank()) {
+            throw new RentalException("Vehicle ID is required");
         }
         this.vehicleId = vehicleId;
         if (customerId == null || customerId.isBlank()) {
