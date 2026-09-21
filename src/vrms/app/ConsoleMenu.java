@@ -23,7 +23,7 @@ public class ConsoleMenu {
 
         while (running) {
             printMenu();
-            System.out.print("Choisissez une option : ");
+            System.out.print("Select an option: ");
             String choice = scanner.nextLine().trim();
 
             switch (choice) {
@@ -40,93 +40,93 @@ public class ConsoleMenu {
                     handleReturnVehicle();
                     break;
                 case "0":
-                    System.out.println("Fermeture du système. Au revoir !");
+                    System.out.println("Shutting down the system. Goodbye!");
                     running = false;
                     break;
                 default:
-                    System.out.println("Option invalide. Veuillez réessayer.\n");
+                    System.out.println("Invalid option. Please try again.\n");
                     break;
             }
         }
     }
 
     private void printMenu() {
-        System.out.println("\n========== VRMS - MENU PRINCIPAL ==========");
-        System.out.println("1. Afficher tous les véhicules");
-        System.out.println("2. Afficher les véhicules disponibles");
-        System.out.println("3. Louer un véhicule");
-        System.out.println("4. Retourner un véhicule");
-        System.out.println("0. Quitter");
-        System.out.println("===========================================");
+        System.out.println("\n========== VRMS - MAIN MENU ==========");
+        System.out.println("1. List all vehicles");
+        System.out.println("2. List available vehicles");
+        System.out.println("3. Rent a vehicle");
+        System.out.println("4. Return a vehicle");
+        System.out.println("0. Exit");
+        System.out.println("=======================================");
     }
 
     private void handleListVehicles() {
-        System.out.println("\n--- Flotte de véhicules ---");
+        System.out.println("\n--- Vehicle Fleet ---");
         for (Vehicle v : rentalService.getVehicleRepository().findAll()) {
-            System.out.printf("[%s] %s | Kilométrage: %.1f km | Tarif: %.2f $/j | Statut: %s%n",
+            System.out.printf("[%s] %s | Mileage: %.1f km | Base Rate: %.2f $/day | Status: %s%n",
                     v.getId(), v.getModel(), v.getMileage(), v.getBaseRate(), v.getStatus());
         }
     }
 
     private void handleListAvailableVehicles() {
-        System.out.println("\n--- Véhicules disponibles ---");
+        System.out.println("\n--- Available Vehicles ---");
         boolean found = false;
         for (Vehicle v : rentalService.getVehicleRepository().findAll()) {
             if (v.getStatus() == Vehicle.VehicleStatus.AVAILABLE) {
-                System.out.printf("[%s] %s | Kilométrage: %.1f km | Tarif: %.2f $/j%n",
+                System.out.printf("[%s] %s | Mileage: %.1f km | Base Rate: %.2f $/day%n",
                         v.getId(), v.getModel(), v.getMileage(), v.getBaseRate());
                 found = true;
             }
         }
         if (!found) {
-            System.out.println("Aucun véhicule disponible actuellement.");
+            System.out.println("No vehicles currently available.");
         }
     }
 
     private void handleRentVehicle() {
-        System.out.println("\n--- Nouvelle location ---");
+        System.out.println("\n--- New Rental ---");
         try {
-            System.out.print("Identifiant de la location (ex: R99) : ");
+            System.out.print("Rental ID (e.g. R99): ");
             String rentalId = scanner.nextLine().trim();
 
-            System.out.print("Identifiant du véhicule (ex: V01) : ");
+            System.out.print("Vehicle ID (e.g. V01): ");
             String vehicleId = scanner.nextLine().trim();
 
-            System.out.print("Identifiant du client (ex: C01) : ");
+            System.out.print("Customer ID (e.g. C01): ");
             String customerId = scanner.nextLine().trim();
 
-            System.out.print("Date/heure de début (ex: 2026-10-01T10:00:00) : ");
+            System.out.print("Start date & time (e.g. 2026-10-01T10:00:00): ");
             LocalDateTime start = LocalDateTime.parse(scanner.nextLine().trim());
 
-            System.out.print("Date/heure de fin (ex: 2026-10-03T18:00:00) : ");
+            System.out.print("End date & time (e.g. 2026-10-03T18:00:00): ");
             LocalDateTime end = LocalDateTime.parse(scanner.nextLine().trim());
 
             Rental rental = rentalService.rentVehicle(rentalId, vehicleId, customerId, start, end);
-            System.out.printf("Location validée avec succès ! Total facturé : %.2f $%n", rental.getTotalPrice());
+            System.out.printf("Rental confirmed successfully! Total charged: %.2f $%n", rental.getTotalPrice());
 
         } catch (DateTimeParseException e) {
-            System.err.println("Erreur : format de date invalide. Utilisez le format ISO YYYY-MM-DDTHH:MM:SS.");
+            System.err.println("Error: Invalid date format. Please use the ISO format YYYY-MM-DDTHH:MM:SS.");
         } catch (RentalException e) {
-            System.err.println("Échec de la location : " + e.getMessage());
+            System.err.println("Rental failed: " + e.getMessage());
         }
     }
 
     private void handleReturnVehicle() {
-        System.out.println("\n--- Clôture de location ---");
+        System.out.println("\n--- Return Vehicle ---");
         try {
-            System.out.print("Identifiant de la location : ");
+            System.out.print("Rental ID: ");
             String rentalId = scanner.nextLine().trim();
 
-            System.out.print("Kilométrage final du véhicule : ");
+            System.out.print("Final odometer mileage: ");
             double endMileage = Double.parseDouble(scanner.nextLine().trim());
 
             rentalService.returnVehicle(rentalId, endMileage);
-            System.out.println("Véhicule retourné et remis en disponibilité avec succès !");
+            System.out.println("Vehicle returned and set back to AVAILABLE successfully!");
 
         } catch (NumberFormatException e) {
-            System.err.println("Erreur : kilométrage invalide.");
+            System.err.println("Error: Invalid mileage format.");
         } catch (RentalException e) {
-            System.err.println("Échec du retour : " + e.getMessage());
+            System.err.println("Return failed: " + e.getMessage());
         }
     }
 }
