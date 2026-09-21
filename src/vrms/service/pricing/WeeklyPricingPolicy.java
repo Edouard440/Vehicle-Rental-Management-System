@@ -1,7 +1,6 @@
 package vrms.service.pricing;
 
 import vrms.contract.PricingPolicy;
-import vrms.exception.RentalException;
 import vrms.model.Bike;
 import vrms.model.Car;
 import vrms.model.Truck;
