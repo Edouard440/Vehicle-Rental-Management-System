@@ -29,7 +29,7 @@ public class FileStorage{
                 }
 
                 Scanner lineScanner = new Scanner(line);
-                lineScanner.useDelimiter(",");
+                lineScanner.useDelimiter("/");
 
                 Vehicle object = null;
 
@@ -82,7 +82,7 @@ public class FileStorage{
                 }
 
                 Scanner lineScanner = new Scanner(line);
-                lineScanner.useDelimiter(",");
+                lineScanner.useDelimiter("/");
 
                 String id = lineScanner.next().trim();
                 String name = lineScanner.next().trim();
@@ -115,7 +115,7 @@ public class FileStorage{
                 }
 
                 Scanner lineScanner = new Scanner(line);
-                lineScanner.useDelimiter(",");
+                lineScanner.useDelimiter("/");
 
                 String rentalId = lineScanner.next().trim();
                 String vehicleId = lineScanner.next().trim();
