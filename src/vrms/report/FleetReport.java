@@ -68,18 +68,17 @@ public class FleetReport{
 
     public void printFleetSummary(List<Vehicle> vehicles){
         System.out.println("Fleet summary : ");
-        long availableCount = vehicles.stream().filter(vehicle->vehicle.getStatus() == Vehicle.VehicleStatus.AVAILABLE).count();
-        long rentedCount = vehicles.stream().filter(vehicle->vehicle.getStatus() == Vehicle.VehicleStatus.RENTED).count();
-        long maintenanceCount = vehicles.stream().filter(vehicle->vehicle.getStatus() == Vehicle.VehicleStatus.MAINTENANCE).count();
+        long availableCount = vehicles.stream().filter(vehicle -> vehicle.getStatus() == Vehicle.VehicleStatus.AVAILABLE).count();
+        long rentedCount = vehicles.stream().filter(vehicle -> vehicle.getStatus() == Vehicle.VehicleStatus.RENTED).count();
+        long maintenanceCount = vehicles.stream().filter(vehicle -> vehicle.getStatus() == Vehicle.VehicleStatus.MAINTENANCE).count();
 
-        System.out.println("Total vehicles : "+vehicles.size());
-        System.out.println("Available : "+availableCount);
-        System.out.println("Rented : "+ rentedCount);
-        System.out.println("Maintenance : "+maintenanceCount);
+        System.out.println("Total vehicles : " + vehicles.size());
+        System.out.println("Available : " + availableCount);
+        System.out.println("Rented : " + rentedCount);
+        System.out.println("Maintenance : " + maintenanceCount);
 
-        System.out.println("Average mileage : "+ calculateAverageMileage(vehicles));
-        System.out.println("Average base rate : " + calculateAverageBaseRate(vehicles));
-
+        System.out.printf(java.util.Locale.US, "Average mileage : %.2f%n", calculateAverageMileage(vehicles));
+        System.out.printf(java.util.Locale.US, "Average base rate : %.2f%n", calculateAverageBaseRate(vehicles));
     }
 
 }
