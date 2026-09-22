@@ -1,9 +1,6 @@
 package vrms.app;
 
-import java.time.LocalDateTime;
 
-import vrms.exception.RentalException;
-import vrms.model.Car;
 import vrms.model.Customer;
 import vrms.model.Rental;
 import vrms.model.Vehicle;
@@ -11,6 +8,11 @@ import vrms.repository.Repository;
 import vrms.service.RentalService;
 import vrms.repository.FileStorage;
 import java.util.List;
+import vrms.report.FleetReport;
+import vrms.report.PricingInspector;
+import vrms.service.pricing.DailyPricingPolicy;
+import vrms.service.pricing.HourlyPricingPolicy;
+import vrms.service.pricing.WeeklyPricingPolicy;
 
 public class VehicleRentalApp {
     public static void main(String [] args){
@@ -32,6 +34,15 @@ public class VehicleRentalApp {
         System.out.println("Vehicles loaded: " + vehicles.findAll().size());
         System.out.println("Customers loaded: " + customers.findAll().size());
         System.out.println("Rentals loaded: " + rentals.findAll().size());
+
+        FleetReport fleetReport = new FleetReport();
+        fleetReport.printFleetReport(vehicles.findAll());
+        fleetReport.printFleetSummary(vehicles.findAll());
+        fleetReport.printAvailableVehicles(vehicles.findAll());
+
+        PricingInspector.inspectPricingPolicy(DailyPricingPolicy.class);
+        PricingInspector.inspectPricingPolicy(HourlyPricingPolicy.class);
+        PricingInspector.inspectPricingPolicy(WeeklyPricingPolicy.class);
 
         ConsoleMenu menu = new ConsoleMenu(service);
         menu.start();
