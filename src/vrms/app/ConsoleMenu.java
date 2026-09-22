@@ -13,6 +13,7 @@ import vrms.service.RentalService;
 import vrms.service.pricing.DailyPricingPolicy;
 import vrms.service.pricing.HourlyPricingPolicy;
 import vrms.service.pricing.WeeklyPricingPolicy;
+import vrms.concurrent.ConcurrentRentalSimulation;
 
 public class ConsoleMenu {
 
@@ -53,6 +54,17 @@ public class ConsoleMenu {
                 case "6":
                     handleInspectPricingPolicies();
                     break;
+                case "7":
+                    try {
+                        ConcurrentRentalSimulation.runTests();
+                    } catch (IllegalStateException e) {
+                        System.err.println("Simulation failed: " + e.getMessage());
+                    }
+
+                    if (Thread.currentThread().isInterrupted()) {
+                        running = false;
+                    }
+                    break;
                 case "0":
                     System.out.println("Shutting down the system. Goodbye!");
                     running = false;
@@ -72,6 +84,8 @@ public class ConsoleMenu {
         System.out.println("4. Return a vehicle");
         System.out.println("5. Fleet summary report");
         System.out.println("6. Inspect pricing policies");
+        System.out.println("7. Run concurrent rental tests");
+        
         System.out.println("0. Exit");
         System.out.println("=======================================");
     }
