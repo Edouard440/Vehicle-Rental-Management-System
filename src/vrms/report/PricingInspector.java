@@ -1,6 +1,6 @@
 package vrms.report;
 
-import vrms.contract.PricingOption;
+import vrms.annotation.PricingOption;
 import vrms.contract.PricingPolicy;
 
 public class PricingInspector{

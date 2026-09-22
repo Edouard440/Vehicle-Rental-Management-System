@@ -1,5 +1,5 @@
 package vrms.service.pricing;
-import vrms.contract.PricingOption;
+import vrms.annotation.PricingOption;
 import vrms.contract.PricingPolicy;
 import vrms.model.Bike;
 import vrms.model.Car;
