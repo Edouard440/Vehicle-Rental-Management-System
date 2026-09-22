@@ -12,13 +12,38 @@ import vrms.service.RentalService;
 public class ConcurrentRentalSimulation {
 
     public static void main(String[] args) {
+        runTests();
+    }
+
+    public static void runTests() {
+        System.out.println(
+            "\n=== TEST 1: TWO CUSTOMERS REQUEST THE SAME VEHICLE ==="
+        );
+        System.out.println(
+            "Expected: one accepted request and one rejected request."
+        );
+        System.out.println(
+            "Expected: one new active rental and vehicle status RENTED."
+        );
+
         for (int attempt = 1; attempt <= 10; attempt++) {
+            System.out.println("\n--- Attempt " + attempt + "/10 ---");
             runSimulation(false);
-            System.out.println("Concurrent rental test " + attempt + " passed.");
         }
 
+        System.out.println(
+            "\n=== TEST 2: INTERRUPT BOTH REQUESTS BEFORE RENTAL ==="
+        );
+        System.out.println(
+            "Expected: both requests report interruption."
+        );
+        System.out.println(
+            "Expected: no rental created and vehicle remains AVAILABLE."
+        );
+
         runSimulation(true);
-        System.out.println("Interruption test passed.");
+
+        System.out.println("\nAll concurrency tests passed.");
     }
 
     private static void runSimulation(boolean interruptionTest) {
@@ -36,7 +61,7 @@ public class ConcurrentRentalSimulation {
         Customer firstCustomer = customers.findById("C01");
         Customer secondCustomer = customers.findById("C02");
 
-        if (vehicle == null || firstCustomer == null || secondCustomer == null) {
+        if (vehicle == null|| firstCustomer == null|| secondCustomer == null) {
             throw new IllegalStateException("Simulation data is missing");
         }
 
@@ -49,9 +74,7 @@ public class ConcurrentRentalSimulation {
         }
 
         if (rentals.findById("SIM-01") != null || rentals.findById("SIM-02") != null) {
-            throw new IllegalStateException(
-                "Simulation rental IDs must be unused"
-            );
+            throw new IllegalStateException("Simulation rental IDs must be unused");
         }
 
         int initialRentalCount = rentals.findAll().size();
@@ -62,33 +85,13 @@ public class ConcurrentRentalSimulation {
         LocalDateTime start = LocalDateTime.of(2026, 9, 22, 10, 0);
         LocalDateTime end = start.plusHours(2);
 
-        RentalRequestTask firstRequest = new RentalRequestTask(
-            service,
-            "SIM-01",
-            vehicle.getId(),
-            firstCustomer.getId(),
-            start,
-            end
-        );
-
-        RentalRequestTask secondRequest = new RentalRequestTask(
-            service,
-            "SIM-02",
-            vehicle.getId(),
-            secondCustomer.getId(),
-            start,
-            end
-        );
+        RentalRequestTask firstRequest = new RentalRequestTask(service,"SIM-01",vehicle.getId(),firstCustomer.getId(),start,end);
+        RentalRequestTask secondRequest = new RentalRequestTask(service,"SIM-02",vehicle.getId(),secondCustomer.getId(),start,end);
 
         Thread firstThread = new Thread(firstRequest, "customer-1");
         Thread secondThread = new Thread(secondRequest, "customer-2");
 
         if (interruptionTest) {
-            /*
-             * Le main conserve le verrou du service pendant le démarrage
-             * et les demandes d'interruption. Aucune location ne peut donc
-             * être effectuée avant ces interruptions.
-             */
             synchronized (service) {
                 firstThread.start();
                 secondThread.start();
@@ -101,7 +104,6 @@ public class ConcurrentRentalSimulation {
             secondThread.start();
         }
 
-        // Toujours attendre hors du bloc synchronized(service).
         awaitWorkers(firstThread, secondThread);
 
         int successes = 0;
@@ -114,40 +116,108 @@ public class ConcurrentRentalSimulation {
             successes++;
         }
 
-        int activeRentals = countActiveRentals(rentals, vehicle.getId());
+        int activeRentals = countActiveRentals(
+            rentals, vehicle.getId()
+        );
+
+        int newRentals = rentals.findAll().size() - initialRentalCount;
 
         if (interruptionTest) {
-            if (successes != 0 || activeRentals != 0 || rentals.findAll().size() != initialRentalCount || vehicle.getStatus() != Vehicle.VehicleStatus.AVAILABLE || firstRequest.getRental() != null || secondRequest.getRental() != null) {
+            if (successes != 0 || activeRentals != 0|| newRentals != 0|| vehicle.getStatus() != Vehicle.VehicleStatus.AVAILABLE|| firstRequest.getRental() != null|| secondRequest.getRental() != null) {
                 throw new IllegalStateException("Interrupted requests must leave the initial state unchanged");
             }
 
-            if (!"Rental request was interrupted".equals(firstRequest.getFailureMessage()) || !"Rental request was interrupted".equals(secondRequest.getFailureMessage())) {
+            if (!"Rental request was interrupted".equals(firstRequest.getFailureMessage())|| !"Rental request was interrupted".equals(secondRequest.getFailureMessage())) {
                 throw new IllegalStateException("Both requests must report interruption");
             }
-
         } else {
             if (successes != 1) {
-                throw new IllegalStateException("Expected exactly one successful request");
+                throw new IllegalStateException(
+                    "Expected exactly one successful request"
+                );
             }
 
-            if (activeRentals != 1 || rentals.findAll().size() != initialRentalCount + 1) {
-                throw new IllegalStateException("Expected exactly one new active rental");
+            if (activeRentals != 1 || newRentals != 1) {
+                throw new IllegalStateException(
+                    "Expected exactly one new active rental"
+                );
             }
 
             if (vehicle.getStatus() != Vehicle.VehicleStatus.RENTED) {
-                throw new IllegalStateException("Vehicle should be rented");
+                throw new IllegalStateException(
+                    "Vehicle should be rented"
+                );
             }
 
-            RentalRequestTask rejectedRequest = firstRequest.isSuccessful() ? secondRequest : firstRequest;
+            RentalRequestTask rejectedRequest;
+
+            if (firstRequest.isSuccessful()) {
+                rejectedRequest = secondRequest;
+            } else {
+                rejectedRequest = firstRequest;
+            }
 
             if (rejectedRequest.getFailureMessage() == null) {
                 throw new IllegalStateException("Rejected request must report a reason");
             }
         }
+
+        if (firstRequest.isSuccessful()) {
+            System.out.println(
+                "Customer " + firstCustomer.getId() + ": ACCEPTED"
+            );
+        } else {
+            System.out.println(
+                "Customer " + firstCustomer.getId()
+                + ": REFUSED - " + firstRequest.getFailureMessage()
+            );
+        }
+
+        if (secondRequest.isSuccessful()) {
+            System.out.println(
+                "Customer " + secondCustomer.getId() + ": ACCEPTED"
+            );
+        } else {
+            System.out.println(
+                "Customer " + secondCustomer.getId()
+                + ": REFUSED - " + secondRequest.getFailureMessage()
+            );
+        }
+
+        int expectedSuccesses;
+        Vehicle.VehicleStatus expectedStatus;
+
+        if (interruptionTest) {
+            expectedSuccesses = 0;
+            expectedStatus = Vehicle.VehicleStatus.AVAILABLE;
+        } else {
+            expectedSuccesses = 1;
+            expectedStatus = Vehicle.VehicleStatus.RENTED;
+        }
+
+        System.out.println(
+            "Successful requests: " + successes + " expected: " + expectedSuccesses
+        );
+
+        System.out.println(
+            "New rentals: " + newRentals+ "  expected: " + expectedSuccesses
+        );
+
+        System.out.println(
+            "Active rentals for " + vehicle.getId() + ": " + activeRentals + " expected: " + expectedSuccesses
+        );
+
+        System.out.println(
+            "Vehicle status: " + vehicle.getStatus() + " expected: " + expectedStatus
+        );
+
+        System.out.println("Both worker threads terminated.");
+        System.out.println("Result: PASS");
     }
 
     private static int countActiveRentals(
-            Repository<Rental> rentals, String vehicleId) {
+            Repository<Rental> rentals,
+            String vehicleId) {
 
         int count = 0;
 
@@ -174,11 +244,9 @@ public class ConcurrentRentalSimulation {
             return;
         }
 
-        // Délai dépassé ou interruption du thread qui attend.
         first.interrupt();
         second.interrupt();
 
-        // Attente de nettoyage, elle aussi limitée.
         Thread[] workers = { first, second };
 
         for (Thread worker : workers) {
@@ -196,13 +264,9 @@ public class ConcurrentRentalSimulation {
         }
 
         if (stillRunning) {
-            throw new IllegalStateException(
-                "Workers did not terminate within the allowed time"
-            );
+            throw new IllegalStateException("Workers did not terminate within the allowed time");
         }
 
-        throw new IllegalStateException(
-            "Simulation cancelled after interruption or timeout"
-        );
+        throw new IllegalStateException("Simulation cancelled after interruption or timeout");
     }
 }
