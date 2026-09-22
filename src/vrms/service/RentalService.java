@@ -115,6 +115,13 @@ public class RentalService {
         vehicle.setStatus(Vehicle.VehicleStatus.AVAILABLE);
         rental.completeRent();
     }
+    
+        public Repository<Vehicle> getVehicleRepository() {
+        return this.vehicles;
+    }
 
+    public Repository<Rental> getRentalRepository() {
+        return this.rentals;
+    }
 
 }
