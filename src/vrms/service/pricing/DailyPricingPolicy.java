@@ -1,11 +1,13 @@
 package vrms.service.pricing;
 
+import vrms.contract.PricingOption;
 import vrms.contract.PricingPolicy;
 import vrms.model.Bike;
 import vrms.model.Car;
 import vrms.model.Truck;
 import vrms.model.Vehicle;
 
+@PricingOption (name = "Daily")
 public class DailyPricingPolicy implements PricingPolicy{
     @Override 
     public double calculatePrice(int rentalDurationInHours, Vehicle vehicle){
