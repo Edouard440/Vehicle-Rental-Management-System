@@ -67,6 +67,13 @@ public abstract class Vehicle implements Identifiable, Comparable<Vehicle> {
     }
 
     @Override
+    public String toString() {
+        return String.format(java.util.Locale.US,
+            "[%s] %s | Mileage: %.1f km | Rate: %.2f $/day | Status: %s",
+            getId(), getModel(), getMileage(), getBaseRate(), getStatus());
+    }
+
+    @Override
     public int compareTo(Vehicle other){
         return this.getId().compareTo(other.getId());
     }
