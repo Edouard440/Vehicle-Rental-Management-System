@@ -47,45 +47,63 @@ public class RentalService {
         return quote;
     }
 
-    public synchronized Rental rentVehicle(String rentalId, String vehicleId, String customerId, LocalDateTime start, LocalDateTime end ) throws RentalException{
-        Vehicle vehicle = vehicles.findById(vehicleId);
-        if(vehicle == null){
-            throw new RentalException("vehicle not found");
-        }
+    public synchronized Rental rentVehicle(String rentalId, String vehicleId, String customerId, LocalDateTime start, LocalDateTime end) throws RentalException {
 
-        Customer customer = customers.findById(customerId);
-        if(customer == null){
-            throw new RentalException("customer not found");
-        }
-
-        if (rentals.findById(rentalId) != null) {
-            throw new RentalException("Rental ID already exists");
-        }
-        for (Rental existing : rentals.findAll()){
-            if(existing.getVehicleId().equals(vehicleId) && existing.isActive()){
-                throw new RentalException("vehicle has already an active rental");
-            }
-        }
-
-        if (start == null || end == null) {
-            throw new RentalException("Start and end are required");
-        }
-
-        if (!end.isAfter(start)) {
-            throw new RentalException("End must be after start");
-        }
-        Duration duration = Duration.between(start, end);
-        long hours = duration.toHours();
-        if(!duration.equals(Duration.ofHours(hours))){
-            hours ++;
-        }
-        int rentalDurationInHours = Math.toIntExact(hours);
-        double quote = calculateQuote(rentalDurationInHours, vehicle);
-
-        Rental rental = new Rental(rentalId, vehicleId, customerId, start, end, quote, true);
-        vehicle.setStatus(Vehicle.VehicleStatus.RENTED);        rentals.save(rental);
-        return rental;
+    Vehicle vehicle = vehicles.findById(vehicleId);
+    if (vehicle == null) {
+        throw new RentalException("Vehicle not found");
     }
+
+    if (vehicle.getStatus() != Vehicle.VehicleStatus.AVAILABLE) {
+        throw new RentalException("Vehicle is not available");
+    }
+
+    Customer customer = customers.findById(customerId);
+    if (customer == null) {
+        throw new RentalException("Customer not found");
+    }
+
+    if (rentals.findById(rentalId) != null) {
+        throw new RentalException("Rental ID already exists");
+    }
+
+    for (Rental existing : rentals.findAll()) {
+        if (existing.getVehicleId().equals(vehicleId) && existing.isActive()) {
+            throw new RentalException("Vehicle already has an active rental");
+        }
+    }
+
+    if (start == null || end == null) {
+        throw new RentalException("Start and end are required");
+    }
+
+    if (!end.isAfter(start)) {
+        throw new RentalException("End must be after start");
+    }
+
+    Duration duration = Duration.between(start, end);
+    long hours = duration.toHours();
+
+    if (!duration.equals(Duration.ofHours(hours))) {
+        hours++;
+    }
+
+    int rentalDurationInHours = Math.toIntExact(hours);
+    double quote = calculateQuote(rentalDurationInHours, vehicle);
+
+    Rental rental = new Rental(
+        rentalId, vehicleId, customerId, start, end, quote, true
+    );
+
+    if (Thread.currentThread().isInterrupted()) {
+        throw new RentalException("Rental request was interrupted");
+    }
+
+    vehicle.setStatus(Vehicle.VehicleStatus.RENTED);
+    rentals.save(rental);
+
+    return rental;
+}
 
     public void returnVehicle(String rentalId, double endMileage)throws RentalException{
         Rental rental = rentals.findById(rentalId);
