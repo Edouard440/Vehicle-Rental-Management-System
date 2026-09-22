@@ -47,7 +47,7 @@ public class RentalService {
         return quote;
     }
 
-    public Rental rentVehicle(String rentalId, String vehicleId, String customerId, LocalDateTime start, LocalDateTime end ) throws RentalException{
+    public synchronized Rental rentVehicle(String rentalId, String vehicleId, String customerId, LocalDateTime start, LocalDateTime end ) throws RentalException{
         Vehicle vehicle = vehicles.findById(vehicleId);
         if(vehicle == null){
             throw new RentalException("vehicle not found");

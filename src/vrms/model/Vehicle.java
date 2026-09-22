@@ -51,11 +51,8 @@ public abstract class Vehicle implements Identifiable, Comparable<Vehicle> {
     }
 
     public void setMileage(double mileage) throws RentalException {
-    if (!Double.isFinite(mileage) || mileage < 0
-                || mileage < this.mileage) {
-            throw new RentalException(
-                "Mileage must be finite, non-negative and cannot decrease"
-            );
+    if (!Double.isFinite(mileage) || mileage < 0 || mileage < this.mileage) {
+            throw new RentalException("Mileage must be finite, non-negative and cannot decrease");
         }
 
         this.mileage = mileage;
