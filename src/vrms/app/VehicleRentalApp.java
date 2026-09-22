@@ -19,9 +19,9 @@ public class VehicleRentalApp {
         Repository<Rental> rentals = new Repository<>();
         FileStorage fileStorage = new FileStorage();
 
-        List<Vehicle> loadVehicles = fileStorage.loadVehicles("Vehicle-Rental-Management-System//data/vehicles.txt");
-        List<Customer> loadCustomers = fileStorage.loadCustomers("Vehicle-Rental-Management-System//data/customers.txt");
-        List<Rental> loadRentals = fileStorage.loadRentals("Vehicle-Rental-Management-System//data/rentals.txt");
+        List<Vehicle> loadVehicles = fileStorage.loadVehicles("data/vehicles.txt");
+        List<Customer> loadCustomers = fileStorage.loadCustomers("data/customers.txt");
+        List<Rental> loadRentals = fileStorage.loadRentals("data/rentals.txt");
 
         RentalService service = new RentalService(vehicles, customers, rentals);
 

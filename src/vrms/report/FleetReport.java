@@ -4,7 +4,7 @@ import java.util.List;
 
 public class FleetReport{
     public void printFleetReport(List<Vehicle> vehicles){
-        System.out.println("Fleet report :");
+        System.out.println("Fleet report : ");
         if(vehicles.isEmpty()){
             System.out.println("No vehicles in the fleet.");
             return;
@@ -15,7 +15,7 @@ public class FleetReport{
     }
 
     public void printAvailableVehicles(List<Vehicle> vehicles){
-        System.out.println("Availables vehicles :");
+        System.out.println("Availables vehicles : ");
         List<Vehicle> availablesVehicles = vehicles.stream().filter(vehicle -> vehicle.getStatus() == Vehicle.VehicleStatus.AVAILABLE).toList();
 
         if (availablesVehicles.isEmpty()){
@@ -27,7 +27,7 @@ public class FleetReport{
 
 
     public void printRentedVehicles(List<Vehicle> vehicles){
-        System.out.println("Rented Vehicles:");
+        System.out.println("Rented Vehicles : ");
         List<Vehicle> rentedVehicles = vehicles.stream().filter(vehicle -> vehicle.getStatus() == Vehicle.VehicleStatus.RENTED).toList();
         if (rentedVehicles.isEmpty()){
             System.out.println("No rented vehicles.");
@@ -39,7 +39,7 @@ public class FleetReport{
     }
 
     public void printMaintenanceVehicles(List<Vehicle> vehicles){
-        System.out.println("Maintenance Vehicles:");
+        System.out.println("Maintenance Vehicles : ");
         List<Vehicle> maintenanceVehicles = vehicles.stream().filter(vehicle -> vehicle.getStatus() == Vehicle.VehicleStatus.MAINTENANCE).toList();
         if (maintenanceVehicles.isEmpty()){
             System.out.println("No vehicles in maintenance.");
@@ -67,18 +67,18 @@ public class FleetReport{
     }
 
     public void printFleetSummary(List<Vehicle> vehicles){
-        System.out.println("Fleet summary :");
+        System.out.println("Fleet summary : ");
         long availableCount = vehicles.stream().filter(vehicle->vehicle.getStatus() == Vehicle.VehicleStatus.AVAILABLE).count();
         long rentedCount = vehicles.stream().filter(vehicle->vehicle.getStatus() == Vehicle.VehicleStatus.RENTED).count();
         long maintenanceCount = vehicles.stream().filter(vehicle->vehicle.getStatus() == Vehicle.VehicleStatus.MAINTENANCE).count();
 
-        System.out.println("Total vehicles"+vehicles.size());
-        System.out.println("Available :"+availableCount);
+        System.out.println("Total vehicles : "+vehicles.size());
+        System.out.println("Available : "+availableCount);
         System.out.println("Rented : "+ rentedCount);
-        System.out.println("Maintenance"+maintenanceCount);
+        System.out.println("Maintenance : "+maintenanceCount);
 
-        System.out.println("Average mileage :"+ calculateAverageMileage(vehicles));
-        System.out.println("Average base rate :" + calculateAverageBaseRate(vehicles));
+        System.out.println("Average mileage : "+ calculateAverageMileage(vehicles));
+        System.out.println("Average base rate : " + calculateAverageBaseRate(vehicles));
 
     }
 
